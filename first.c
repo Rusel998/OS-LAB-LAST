@@ -1,12 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <time.h>
-#include <sys/wait.h>
-
-#include <stdio.h>
 #include <unistd.h>
 #include <sys/time.h>
 #include <time.h>
