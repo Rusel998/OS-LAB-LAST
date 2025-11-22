@@ -6,68 +6,42 @@
 #include <time.h>
 #include <sys/wait.h>
 
-void print_info(const char *label) {
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <time.h>
+
+void info(const char *name) {
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, 0);
 
-    struct tm *tm_info = localtime(&tv.tv_sec);
+    struct tm t = *localtime(&tv.tv_sec);
 
-    int hours   = tm_info->tm_hour;
-    int minutes = tm_info->tm_min;
-    int seconds = tm_info->tm_sec;
-    long millis = tv.tv_usec / 1000;
-
-    printf("[%s] pid=%d, ppid=%d, time=%02d:%02d:%02d:%03ld\n",
-           label,
+    printf("%s: pid=%d ppid=%d time=%02d:%02d:%02d:%03ld\n",
+           name,
            getpid(),
            getppid(),
-           hours, minutes, seconds, millis);
+           t.tm_hour,
+           t.tm_min,
+           t.tm_sec,
+           tv.tv_usec / 1000);
 }
 
-int main(void) {
-    pid_t pid1, pid2;
+int main() {
+    pid_t p1 = fork();
 
-    printf("Старт программы (пока один процесс)\n");
-    print_info("START");
-
-    pid1 = fork();
-
-    if (pid1 < 0) {
-        perror("fork1");
-        exit(EXIT_FAILURE);
-    }
-
-    if (pid1 == 0) {
-        print_info("CHILD 1");
-        sleep(5);
+    if (p1 == 0) {
+        info("CHILD 1");
         return 0;
     }
 
-    pid2 = fork();
+    pid_t p2 = fork();
 
-    if (pid2 < 0) {
-        perror("fork2");
-        exit(EXIT_FAILURE);
-    }
-
-    if (pid2 == 0) {
-        print_info("CHILD 2");
-        sleep(5);
+    if (p2 == 0) {
+        info("CHILD 2");
         return 0;
     }
 
-    print_info("PARENT (before ps)");
-
-    printf("\n--- Выполнение команды ps -x (родительский процесс) ---\n\n");
+    info("PARENT");
     system("ps -x");
-
-    int status;
-    waitpid(pid1, &status, 0);
-    waitpid(pid2, &status, 0);
-
-    print_info("PARENT (after children finished)");
-    printf("Родительский процесс завершён.\n");
-
-    return 0;
 }
-

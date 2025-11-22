@@ -4,10 +4,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <errno.h>
 
-#define MAX_LINE 1024     // максимальная длина вводимой строки
-#define MAX_ARGS 64      // максимальное количество аргументов
+#define MAX_LINE 1024
+#define MAX_ARGS 64
 
 int main(void) {
     char line[MAX_LINE];
@@ -17,8 +16,7 @@ int main(void) {
         fflush(stdout);
 
         if (fgets(line, sizeof(line), stdin) == NULL) {
-            printf("\n");
-            break;
+            break;                     // EOF
         }
 
         size_t len = strlen(line);
@@ -30,7 +28,7 @@ int main(void) {
             continue;
         }
 
-        if (strcmp(line, "exit") == 0 || strcmp(line, "quit") == 0) {
+        if (strcmp(line, "exit") == 0) {
             break;
         }
 
@@ -44,12 +42,7 @@ int main(void) {
         }
         argv[argc] = NULL;
 
-        if (argc == 0) {
-            continue;
-        }
-
         pid_t pid = fork();
-
         if (pid < 0) {
             perror("fork");
             continue;
@@ -57,7 +50,6 @@ int main(void) {
 
         if (pid == 0) {
             execvp(argv[0], argv);
-
             perror("execvp");
             exit(EXIT_FAILURE);
         } else {
@@ -67,8 +59,4 @@ int main(void) {
             }
         }
     }
-
-    printf("Выход из интерпретатора команд.\n");
-    return 0;
 }
-
