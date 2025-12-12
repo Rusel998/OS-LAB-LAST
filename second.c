@@ -16,7 +16,7 @@ int main(void) {
         fflush(stdout);
 
         if (fgets(line, sizeof(line), stdin) == NULL) {
-            break;                     // EOF
+            break;                     
         }
 
         size_t len = strlen(line);
