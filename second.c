@@ -13,7 +13,6 @@ int main(void) {
 
     while (1) {
         printf("shell>>> ");
-        fflush(stdout);
 
         if (fgets(line, sizeof(line), stdin) == NULL) {
             break;                     
